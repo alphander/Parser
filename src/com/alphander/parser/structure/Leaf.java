@@ -63,16 +63,16 @@ public class Leaf extends Part
 		return string + value + string;
 	}
 	
-	public Double getNumber()
+	public double getNumber()
 	{
-		if(this.type != Type.Number) return null;
+		if(this.type != Type.Number) throw new IllegalArgumentException();
 		
 		return Double.parseDouble(value);
 	}
 	
-	public Boolean getBoolean()
+	public boolean getBoolean()
 	{
-		if(this.type != Type.Boolean) return null;
+		if(this.type != Type.Boolean) throw new IllegalArgumentException();
 		
 		return Boolean.parseBoolean(value);
 	}

@@ -8,7 +8,7 @@ import com.alphander.parser.structure.List;
 import com.alphander.parser.structure.Part;
 import com.alphander.parser.structure.Type;
 
-public class Parcer
+public class Parser
 {
 	private String str;
 	private int indents = 0;

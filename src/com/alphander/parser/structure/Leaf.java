@@ -10,7 +10,17 @@ public class Leaf extends Part
 	
 	public Leaf(String value)
 	{
-		set(value);
+		setString(value);
+	}
+	
+	public Leaf(Double value)
+	{
+		setDouble(value);
+	}
+	
+	public Leaf(Boolean value)
+	{
+		setBoolean(value);
 	}
 	
 	public Leaf()
@@ -18,9 +28,27 @@ public class Leaf extends Part
 		
 	}
 	
-	public void set(String value)
+	public void setString(String value)
 	{
 		this.value = value;
+		this.type = Type.String;
+	}
+	
+	public void setDouble(Double value)
+	{
+		this.value = "" + value;
+		this.type = Type.Number;
+	}
+	
+	public void setBoolean(Boolean value)
+	{
+		this.value = "" + value;
+		this.type = Type.Boolean;
+	}
+	
+	public void set(String str)
+	{
+		this.value = str;
 	}
 	
 	public String get()
@@ -163,7 +191,8 @@ public class Leaf extends Part
 	
 	public static Leaf leaf(String str)
 	{
-		Leaf leaf = new Leaf(str);
+		Leaf leaf = new Leaf();
+		leaf.set(str);
 		if(leaf.stringIt() == null && leaf.numIt() == null && leaf.boolIt() == null && !leaf.isNone())
 			return null;
 		return leaf;	

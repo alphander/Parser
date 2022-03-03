@@ -12,6 +12,31 @@ public class Dict extends Part implements Iterable<Entry<Leaf, Part>>
 	{
 		map.put(key, value);
 	}
+	
+	public void put(String key, Part value)
+	{
+		map.put(new Leaf(key), value);
+	}
+	
+	public void put(String key, String value)
+	{
+		map.put(new Leaf(key), new Leaf(value));
+	}
+	
+	public void put(String key, Double value)
+	{
+		map.put(new Leaf(key), new Leaf(value));
+	}
+	
+	public void put(String key, Boolean value)
+	{
+		map.put(new Leaf(key), new Leaf(value));
+	}
+	
+	public Part get(String key)
+	{
+		return map.get(new Leaf(key));
+	}
 
 	@Override
 	public Iterator<Entry<Leaf, Part>> iterator()

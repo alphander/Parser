@@ -24,7 +24,9 @@ public class Parser
 	private static final char pause = ',';
 	private static final String nextLine = "\n";
 	private static final String indent = "\t";
-	private static final char[] ignore = {' '};
+	private static final String space = " ";
+	private static final char string = '"';
+	private static final char[] ignore = {' ', '\n', '\t'};
 	private static final char[] stop = {'{', ':', '}', '[', ']', ','};
 	
 	public String save(Part part)
@@ -40,8 +42,7 @@ public class Parser
 		index = -1;
 		chars = str.toCharArray();
 		Part part = part();
-		if(part == null)
-			throw new IllegalArgumentException();
+		if(part == null) throw new IllegalArgumentException();
 		return part;
 	}
 	
@@ -59,25 +60,27 @@ public class Parser
 	private void dict(Dict dict)
 	{
 		str += dictEnter + nextLine;
-		indents += 1;
+		indents++;
 		boolean first = true;
-		for(Entry<Leaf, Part> entry : dict)
+		for(Entry<String, Part> entry : dict)
 		{
 			if(first)
 				first = false;
 			else
 				str += pause + nextLine;
-			part(entry.getKey());
-			str += dictPause;
+			str += indents();
+			str += string + entry.getKey() + string;
+			str += dictPause + space;
 			part(entry.getValue());
 		}
-		indents -= 1;
-		str += nextLine + dictExit;
+		indents--;
+		str += nextLine + indents() + dictExit;
 	}
 	
 	private void list(List list)
 	{
 		str += listEnter + nextLine;
+		indents++;
 		boolean first = true;
 		for(Part part : list)
 		{
@@ -85,15 +88,17 @@ public class Parser
 				first = false;
 			else
 				str += pause + nextLine;
+			str += indents();
 			part(part);
 		}
-		str += nextLine + listExit;
+		indents--;
+		str += nextLine + indents() + listExit;
 	}
 	
 	private void leaf(Leaf leaf)
 	{
 		if(leaf.getType() == Type.String)
-			str += leaf.getString();
+			str += leaf.get();
 		if(leaf.getType() == Type.Number)
 			str += leaf.getNumber();
 		if(leaf.getType() == Type.Boolean)
@@ -116,7 +121,6 @@ public class Parser
 		while(true)
 		{	
 			Part part = part();
-			if(part == null) return null;
 			list.add(part);
 			char c = chars[index];
 		
@@ -124,9 +128,9 @@ public class Parser
 				continue;
 			if(c == listExit)
 				break;
-			return null;
+			throw new IllegalArgumentException();
 		}
-		index++;
+		search();
 		return list;
 	}
 	
@@ -136,15 +140,13 @@ public class Parser
 		while(true)
 		{	
 			search();
-			Leaf key = leaf();
-			if(key.getType() != Type.String) return null;
+			String key = leaf().getString();
 			
 			char c = chars[index];
-			if(c != dictPause) return null;
+			if(c != dictPause) throw new IllegalArgumentException();
 			
 			Part value = part();
 			
-			if(value == null || key == null) return null;
 			dict.put(key, value);
 			
 			c = chars[index];
@@ -152,36 +154,39 @@ public class Parser
 				continue;
 			if(c == dictExit)
 				break;
-			return null;
+			throw new IllegalArgumentException();
 		}
-		index++;
+		search();
 		return dict;
 	}
 	
 	private Leaf leaf()
 	{
 		String str = "";
-		while(true)
+		while(index < chars.length-1)
 		{
 			char c = chars[index];
 			for(char s : stop)
 				if(s == c)
 					return Leaf.leaf(str);
-			
 			str += c;
 			index++;
 		}
+		throw new ArrayIndexOutOfBoundsException();
 	}
 	
 	private char search()
 	{
-		while(true)
+		while(index < chars.length-1)
 		{
+			boolean b = false;
 			char c = chars[++index];
 			for(char i : ignore)
-				if(c != i)
-					return c;
+				b = c == i || b;
+			
+			if(!b) return c;
 		}
+		return 0;
 	}
 	
 	private String indents()

@@ -5,36 +5,41 @@ import java.util.Iterator;
 
 public class List extends Part implements Iterable<Part>
 {
-	private ArrayList<Part> set = new ArrayList<Part>();
+	private ArrayList<Part> list = new ArrayList<Part>();
 	
 	public void add(Part part)
 	{
-		set.add(part);
+		list.add(part);
 	}
 	
 	public void add(String value)
 	{
-		set.add(new Leaf(value));
+		list.add(new Leaf(value));
 	}
 	
-	public void add(Double value)
+	public void add(double value)
 	{
-		set.add(new Leaf(value));
+		list.add(new Leaf(value));
 	}
 	
-	public void add(Boolean value)
+	public void add(boolean value)
 	{
-		set.add(new Leaf(value));
+		list.add(new Leaf(value));
 	}
 	
 	public Part get(int index)
 	{
-		return set.get(index);
+		return list.get(index);
+	}
+	
+	public int size()
+	{
+		return list.size();
 	}
 
 	@Override
 	public Iterator<Part> iterator()
 	{
-		return set.iterator();
+		return list.iterator();
 	}
 }

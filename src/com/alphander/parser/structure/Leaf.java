@@ -3,7 +3,7 @@ package com.alphander.parser.structure;
 public class Leaf extends Part
 {	
 	private static final char string = '"';
-	private static final char space = ' ';
+	private static final char[] ignore = {' ', '\n', '\t'};
 	
 	private String value = "";
 	private Type type = Type.None;
@@ -51,16 +51,9 @@ public class Leaf extends Part
 		this.value = str;
 	}
 	
-	public String get()
-	{
-		return value;
-	}
-	
 	public String getString()
 	{
-		if(this.type != Type.String) return null;
-		
-		return string + value + string;
+		return value;
 	}
 	
 	public double getNumber()
@@ -75,6 +68,13 @@ public class Leaf extends Part
 		if(this.type != Type.Boolean) throw new IllegalArgumentException();
 		
 		return Boolean.parseBoolean(value);
+	}
+	
+	public String get()
+	{
+		if(this.type != Type.String) return null;
+		
+		return string + value + string;
 	}
 	
 	public Type getType()
@@ -93,7 +93,7 @@ public class Leaf extends Part
 		
 		int start = 0, end = 0;
 		for(int i = 0; i < chars.length; i++)
-			if(chars[i] != space)
+			if(!isIgnore(chars[i]))
 			{
 				if(chars[i] == string)
 				{
@@ -104,7 +104,7 @@ public class Leaf extends Part
 			}
 		
 		for(int i = chars.length - 1; i >= 0; i--)
-			if(chars[i] != space)
+			if(!isIgnore(chars[i]))
 			{
 				if(chars[i] == string)
 				{
@@ -136,7 +136,7 @@ public class Leaf extends Part
 		{
 			Double d =  Double.parseDouble(str);
 			this.type = Type.Number;
-			value = str;
+			value = "" + d;
 			return d;
 		}
 		catch(NullPointerException | NumberFormatException e)
@@ -156,14 +156,14 @@ public class Leaf extends Part
 		
 		int start = 0, end = 0;
 		for(int i = 0; i < chars.length; i++)
-			if(chars[i] != space)
+			if(!isIgnore(chars[i]))
 			{
 				start = i;
 				break;
 			}
 		
 		for(int i = chars.length - 1; i >= 0; i--)
-			if(chars[i] != space)
+			if(!isIgnore(chars[i]))
 			{
 				end = i;
 				break;
@@ -189,12 +189,26 @@ public class Leaf extends Part
 		return false;
 	}
 	
+	private boolean isIgnore(char c)
+	{
+		for(char i : ignore)
+			if(c == i) return true;
+		return false;
+	}
+	
 	public static Leaf leaf(String str)
 	{
 		Leaf leaf = new Leaf();
 		leaf.set(str);
 		if(leaf.stringIt() == null && leaf.numIt() == null && leaf.boolIt() == null && !leaf.isNone())
-			return null;
+			throw new IllegalArgumentException();
 		return leaf;	
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return value.hashCode();
+	}
+	
 }

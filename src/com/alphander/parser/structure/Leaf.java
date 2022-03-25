@@ -27,6 +27,13 @@ public class Leaf extends Part
 	{
 		
 	}
+	@Override
+	public Part get(Object... objects) 
+	{
+		if(objects.length == 0) return this;
+
+		throw new IllegalArgumentException();
+	}
 	
 	public void setString(String value)
 	{
@@ -209,6 +216,5 @@ public class Leaf extends Part
 	public int hashCode()
 	{
 		return value.hashCode();
-	}
-	
+	}	
 }
